@@ -1,0 +1,56 @@
+<div class="documind-wrapper">
+  <button class="chat-fab" (click)="toggleChat()" [class.active]="isOpen()">
+    @if (isOpen()) { ✕ } @else { 💬 }
+  </button>
+
+  @if (isOpen()) {
+    <div class="chat-card">
+      <div class="chat-header">
+        <div class="status-dot"></div>
+        <strong>DocuMind AI</strong>
+      </div>
+
+      <div class="chat-body" #scrollFrame>
+        @for (msg of messages(); track msg.timestamp) {
+          <div class="msg-group" [ngClass]="msg.type">
+            <div class="bubble">
+              
+              @if (msg.type === 'ai') {
+                <div class="markdown-content" [innerHTML]="msg.text"></div>
+              } @else {
+                <p>{{ msg.text }}</p>
+              }
+
+              @if (msg.sources?.length) {
+                <div class="sources-list">
+                  @for (src of msg.sources; track src) {
+                    <span class="source-tag">📄 {{ src }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if (isLoading()) {
+          <div class="msg-group ai">
+            <div class="bubble thinking">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="chat-footer">
+        <input 
+          [(ngModel)]="userInput" 
+          (keyup.enter)="sendMessage()" 
+          placeholder="Ask your document..."
+          [disabled]="isLoading()"/>
+        <button (click)="sendMessage()" [disabled]="isLoading() || !userInput()">
+          ➤
+        </button>
+      </div>
+    </div>
+  }
+</div>
